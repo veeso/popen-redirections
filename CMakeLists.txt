@@ -22,7 +22,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_BUILD_TYPE RELEASE)
 
 #Build clients
-add_executable(popen-exp main.c ${POPEN_SRC})
+add_executable(popen-exp ${POPEN_SRC})
 target_link_libraries(popen-exp -lpthread)
 
 #Install rules
