@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <sys/select.h>
+#include <poll.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -15,6 +15,7 @@
  */
 
 int input_available() {
+  /*
   struct timeval tv;
   fd_set fds;
   tv.tv_sec = 0;
@@ -23,6 +24,18 @@ int input_available() {
   FD_SET(STDIN_FILENO, &fds);
   select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
   return (FD_ISSET(0, &fds));
+  */
+  struct pollfd fds[1];
+  //Open FIFO
+  fds[0].fd = STDIN_FILENO;
+  fds[0].events = POLLIN | POLLRDBAND | POLLHUP;
+  int ret = poll(fds, 1, 1);
+  if (ret > 0) {
+    if ((fds[0].revents & POLLIN) || (fds[0].revents & POLLRDBAND)) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 int main(const int argc, const char** argv) {
