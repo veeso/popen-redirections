@@ -33,7 +33,6 @@ int main(const int argc, const char** argv) {
   }
   const char* command = argv[1];
   int rc = 0;
-  int waitpid_status;
 
   //Extra Payload
   const char* extra_payload = "echo '//EOF';\n";
@@ -63,11 +62,10 @@ int main(const int argc, const char** argv) {
       exit(1);
     } 
     //Execute process
-    if (execvp(command_argv[0], command_argv) == -1 ) {
+    if ((rc = execvp(command_argv[0], command_argv)) == -1 ) {
       printf("Could not start process '%s'\n", command_argv[0]);
       exit(1);
     }
-    exit(0);
   } else if (pid == -1) { //Error
     printf("Could not fork process\n");
     rc = 2;
@@ -75,7 +73,7 @@ int main(const int argc, const char** argv) {
   }
 
   //Loop
-  while (waitpid(pid, &waitpid_status, WNOHANG) == 0) {
+  while (waitpid(pid, &rc, WNOHANG) == 0) {
     if (input_available() > 0) {
       //Read input
       char* line = NULL;
@@ -116,6 +114,8 @@ int main(const int argc, const char** argv) {
       goto cleanup;
     }
   }
+  rc = WEXITSTATUS(rc);
+  printf("EXIT CODE: %d\n", rc);
 
 cleanup:
   if (stdin_pipe != NULL) {
