@@ -1,6 +1,6 @@
 # Popen Stdin/Stdout Redirections
 
-Developed by Christian Visintin <christian.visintin1997@gmail.com>
+Developed by Christian Visintin
 
 ## Introduction
 
